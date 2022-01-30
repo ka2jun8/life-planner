@@ -7,6 +7,7 @@ type Args = {
   otherFee: number; // マンションの管理費等(円)
   salary: number; // 年収(万円)
   isTaxDeduction: boolean; // 住宅ローン減税を考慮に入れるかどうか
+  isChildFutureAid: boolean; // こどもみらい住宅支援事業を考慮に入れるかどうか
 };
 
 type Result = {
@@ -52,6 +53,7 @@ export function simulator({
   otherFee,
   salary,
   isTaxDeduction,
+  isChildFutureAid,
 }: Args): Result {
   console.log({ age, loanYears, loanPrice, interestRate, otherFee });
 
@@ -79,7 +81,11 @@ export function simulator({
 
   // 人生100年時代なので100才まで払い続けると仮定する
   const monthsToLive = (100 - age) * 12;
-  const allPayingCost = loanPlusDebtPrice + otherFee * monthsToLive;
+  let allPayingCost = loanPlusDebtPrice + otherFee * monthsToLive;
+
+  if (isChildFutureAid) {
+    allPayingCost = allPayingCost - 100 * 10000;
+  }
 
   // 住宅ローン減税を計算する場合
   if (isTaxDeduction) {
@@ -87,22 +93,27 @@ export function simulator({
     const { limitYears, upperSalaryLimit, yearlyDeductionPrice } = taxDeduction(
       { loanPrice, type: "zeh" }
     );
-    const monthlyDeductionPrice = yearlyDeductionPrice / 12;
+    const monthlyDeductionPrice = (yearlyDeductionPrice * 10000) / 12;
     if (upperSalaryLimit > salary) {
       return {
-        monthlyReturningPrice: monthlyReturningPrice - monthlyDeductionPrice,
-        loanPlusDebtPrice:
-          loanPlusDebtPrice - yearlyDeductionPrice * limitYears,
-        monthlyCost: monthlyCost - monthlyDeductionPrice,
-        allPayingCost: allPayingCost - yearlyDeductionPrice * limitYears,
+        monthlyReturningPrice: Math.round(
+          monthlyReturningPrice - monthlyDeductionPrice
+        ),
+        loanPlusDebtPrice: Math.round(
+          loanPlusDebtPrice - yearlyDeductionPrice * 10000 * limitYears
+        ),
+        monthlyCost: Math.round(monthlyCost - monthlyDeductionPrice),
+        allPayingCost: Math.round(
+          allPayingCost - yearlyDeductionPrice * 10000 * limitYears
+        ),
       };
     }
   }
 
   return {
-    monthlyReturningPrice,
-    loanPlusDebtPrice,
-    monthlyCost,
-    allPayingCost,
+    monthlyReturningPrice: Math.round(monthlyReturningPrice),
+    loanPlusDebtPrice: Math.round(loanPlusDebtPrice),
+    monthlyCost: Math.round(monthlyCost),
+    allPayingCost: Math.round(allPayingCost),
   };
 }

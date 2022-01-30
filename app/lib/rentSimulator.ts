@@ -24,7 +24,7 @@ export function rentSimulator({
   const allPayingCost = (monthlyCost * 12 + renewalFee) * yearsToLive;
 
   return {
-    monthlyCost,
-    allPayingCost,
+    monthlyCost: Math.round(monthlyCost),
+    allPayingCost: Math.round(allPayingCost),
   };
 }
