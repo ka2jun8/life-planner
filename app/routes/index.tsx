@@ -248,7 +248,7 @@ export default function Index() {
         </form>
 
         {isSubmitted && (
-          <section className="p-4 bg-red-50">
+          <section className="p-4 bg-red-50 flex flex-col items-end">
             <div className="space-x-2">
               <label>毎月支払額:</label>
               <span className="text-xl font-semibold">
@@ -261,23 +261,34 @@ export default function Index() {
                 {monthlyReturningPrice.toLocaleString()}円
               </span>
             </div>
-            <div className="space-x-2">
+            <div className="space-x-2 flex">
               <label>総支払額:</label>
-              <span className="text-xl font-semibold">
-                {allPayingCost.toLocaleString()}円
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-xl font-semibold">
+                  約 {Math.round(allPayingCost / 10000).toLocaleString()} 万円
+                </span>
+                <span className="text-xs">
+                  ({allPayingCost.toLocaleString()}円)
+                </span>
+              </div>
             </div>
-            <div className="space-x-2">
+            <div className="space-x-2 flex">
               <label>総返済額:</label>
-              <span className="text-xl font-semibold">
-                {loanPlusDebtPrice.toLocaleString()}円
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-xl font-semibold">
+                  約 {Math.round(loanPlusDebtPrice / 10000).toLocaleString()}{" "}
+                  万円
+                </span>
+                <span className="text-xs">
+                  ({loanPlusDebtPrice.toLocaleString()}円)
+                </span>
+              </div>
             </div>
             <span>-----</span>
             <div className="space-x-2">
               <label>残る資産推定額:</label>
               <span className="text-xl font-semibold">
-                約{remainAssetPrice.toLocaleString()}円
+                約 {remainAssetPrice.toLocaleString()} 万円
               </span>
               <br />
               <p className="text-xs">

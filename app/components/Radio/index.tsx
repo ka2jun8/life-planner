@@ -15,8 +15,7 @@ export const SimpleRadio: React.VFC<Props> = ({
   value,
   onChange,
 }) => {
-  const buttonStyle =
-    "mt-1 border border-solid p-2 border-gray-700 bg-gray-100 text-xl font-semibold w-32";
+  const buttonStyle = "mt-1 border border-solid p-2 text-xl font-semibold w-32";
   const [isShowDetail, showDetail] = useState<boolean>(false);
 
   return (
@@ -39,7 +38,9 @@ export const SimpleRadio: React.VFC<Props> = ({
         <button
           type="button"
           className={
-            value ? `${buttonStyle} border-red-400 bg-red-50` : `${buttonStyle}`
+            value
+              ? `${buttonStyle} border-red-400 bg-red-50`
+              : `${buttonStyle} border-gray-700 bg-gray-100 `
           }
           onClick={() => onChange(true)}
         >
@@ -47,11 +48,10 @@ export const SimpleRadio: React.VFC<Props> = ({
         </button>
         <button
           type="button"
-          value="戸建て"
           className={
             !value
               ? `${buttonStyle} border-red-400 bg-red-50`
-              : `${buttonStyle}`
+              : `${buttonStyle} border-gray-700 bg-gray-100 `
           }
           onClick={() => onChange(false)}
         >
