@@ -269,6 +269,7 @@ export default function Index() {
                 {monthlyReturningPrice.toLocaleString()}円
               </span>
             </div>
+            <span>-----</span>
             <div className="space-x-2 flex">
               <label>総支払額:</label>
               <div className="flex flex-col items-end">
