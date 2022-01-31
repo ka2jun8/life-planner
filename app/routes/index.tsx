@@ -15,6 +15,9 @@ export const meta: MetaFunction = () => {
   return {
     title: "住宅ローンシミュレーションツール",
     description,
+    ["og:title"]: "住宅ローンシミュレーションツール",
+    ["og:description"]: description,
+    ["og:type"]: "website",
   };
 };
 
