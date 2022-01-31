@@ -128,19 +128,22 @@ export default function Index() {
                 value={rentPrice}
                 unit="円/月"
                 description="家賃は変動する可能性があります。築年数が上がって家賃が下がる可能性がありますが、逆に地価が値上がりして家賃が上がるケースもあります。シミュレーションする際は今よりも高めにしておくとリスクを低減できます。"
-                onChange={(v) => setRentPrice(v)}
+                onChange={(v) => {
+                  setRentPrice(v);
+                  setRenewalFee(v);
+                }}
               />
               <SimpleInput
                 label="管理費・共益費"
                 value={condoFee}
                 description="管理費・共益費は上がる可能性があります。築年数が上がることによってメンテナンスに費用がかかるケースが増えるためです。シミュレーションする際は今よりも高めにしておくとリスクを低減できます。"
-                unit="円/年"
+                unit="円/月"
                 onChange={(v) => setCondoFee(v)}
               />
               <SimpleInput
                 label="更新料"
                 value={renewalFee}
-                unit="円"
+                unit="円/年"
                 description="大体家賃1ヶ月分〜2ヶ月分がかかります。"
                 onChange={(v) => setRenewalFee(v)}
               />
@@ -159,11 +162,15 @@ export default function Index() {
                 label="物件価格"
                 unit="万円"
                 value={housePrice}
-                onChange={(v) => setHousePrice(v)}
+                onChange={(v) => {
+                  setHousePrice(v);
+                  setLoanPrice(v);
+                }}
               />
               {isApartment && (
                 <SimpleInput
                   label="管理費/修繕積立費等"
+                  unit="円/月"
                   value={managementFee}
                   description="管理費/修繕積立費はほぼ確実に上がります。シミュレーションする際は高めに設定しておきましょう。駐車場等、他の設備も利用する場合はここに追加しておいてください。"
                   onChange={(v) => setManagementFee(v)}
