@@ -5,10 +5,16 @@ import { SimpleRadio } from "~/components/Radio";
 import { rentSimulator } from "~/lib/rentSimulator";
 import { simulator } from "~/lib/simulator";
 
+const description = `住宅購入にかかる支払額のシミュレーションを行います。
+実際には住宅ローンの返済に加えて、マンションの場合管理費がかかります。
+また、住宅ローン減税が考慮される場合、実質的な額は利息分がまるまる支払うわけではありません。
+賃貸と比較した場合にも、どちらの方が実費としてかかるのか比較検討できるようにします。
+`;
+
 export const meta: MetaFunction = () => {
   return {
-    title: "住宅ローンシミュレーションツール | ライプラ",
-    description: "住宅ローンを細かくシミュレーションするツール、ライプラです",
+    title: "住宅ローンシミュレーションツール",
+    description,
   };
 };
 
@@ -105,12 +111,7 @@ export default function Index() {
         <h1 className="p-2 text-xl text-gray-800 bg-red-100">
           住宅購入支払額シミュレーター
         </h1>
-        <p className="text-sm p-2">
-          住宅購入にかかる支払額のシミュレーションを行います。
-          実際には住宅ローンの返済に加えて、マンションの場合管理費がかかります。
-          また、住宅ローン減税が考慮される場合、実質的な額は利息分がまるまる支払うわけではありません。
-          賃貸と比較した場合にも、どちらの方が実費としてかかるのか比較検討できるようにします。
-        </p>
+        <p className="text-sm p-2">{description}</p>
         <form className="flex flex-col p-2 space-y-4">
           <SimpleRadio
             label="賃貸か購入か"
@@ -307,8 +308,8 @@ export default function Index() {
         )}
         <footer>
           <p className="text-xs m-2">
-            Copyright © {new Date().getFullYear()}, ライプラ. All Right
-            Reserved.
+            Copyright © {new Date().getFullYear()},
+            住宅ローンシミュレーションツール. All Right Reserved.
           </p>
         </footer>
       </div>
