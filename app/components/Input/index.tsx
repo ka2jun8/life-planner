@@ -29,7 +29,6 @@ export const SimpleInput: React.VFC<Props> = ({
         {description && (
           <span
             className="ml-1 border-2 rounded-full border-red-50 text-sm w-4 bg-red-50 text-red-300 pr-1 pl-1"
-            onClick={() => showDetail(!isShowDetail)}
             onMouseEnter={() => showDetail(true)}
             onMouseLeave={() => showDetail(false)}
           >
