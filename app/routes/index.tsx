@@ -38,6 +38,7 @@ export default function Index() {
   const [interestRate, setInterestRate] = useState<string>("1");
   const [isTaxDeduction, setIsTaxDeduction] = useState<boolean>(true);
   const [isChildFutureAid, setIsChildFutureAid] = useState<boolean>(false);
+  const [bonusPrice, setBonusPrice] = useState<string>("0");
 
   // 共通の質問
   const [salary, setSalary] = useState<string>("500");
@@ -53,7 +54,10 @@ export default function Index() {
   // 結果
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [monthlyReturningPrice, setMonthlyReturningPrice] = useState<number>(0);
+  const [bonusMonthReturningPrice, setBonusMonthReturningPrice] =
+    useState<number>(0);
   const [monthlyCost, setMonthlyCost] = useState<number>(0);
+  const [bonusMonthCost, setBonusMonthCost] = useState<number>(0);
   const [loanPlusDebtPrice, setLoanPlusDebtPrice] = useState<number>(0);
   const [allPayingCost, setAllPayingCost] = useState<number>(0);
   const [remainAssetPrice, setRemainAssetPrice] = useState<number>(0);
@@ -85,6 +89,7 @@ export default function Index() {
       loanYears: Number(loanYear),
       loanPrice: Number(loanPrice),
       interestRate: Number(interestRate),
+      bonusPrice: Number(bonusPrice),
       otherFee: isApartment ? Number(managementFee) : 0,
       salary: Number(salary),
       isTaxDeduction,
@@ -93,7 +98,9 @@ export default function Index() {
     setIsSubmitted(true);
     setMonthlyReturningPrice(result.monthlyReturningPrice);
     setMonthlyCost(result.monthlyCost);
-    setLoanPlusDebtPrice(result.loanPlusDebtPrice);
+    setBonusMonthReturningPrice(result.bonusMonthReturningPrice);
+    setBonusMonthCost(result.bonusMonthCost);
+    setLoanPlusDebtPrice(result.allLoanPlusDebtPrice);
     setAllPayingCost(
       result.allPayingCost +
         initialCost * 10000 +
@@ -204,6 +211,13 @@ export default function Index() {
                 onChange={(v) => setLoanYear(v)}
               />
               <SimpleInput
+                label="ボーナス支払額"
+                unit="万円"
+                description="年2回のボーナス時にのみ追加で返済する額です。よっぽど安定的にボーナスが支払われる企業でない限り含めないことをおすすめします。65歳定年を想定しているため65歳までボーナスが支払われる想定です。ボーナスによる返済額を超さないようにしてください。"
+                value={bonusPrice}
+                onChange={(v) => setBonusPrice(v)}
+              />
+              <SimpleInput
                 label="金利"
                 unit="%"
                 value={interestRate}
@@ -266,12 +280,28 @@ export default function Index() {
                 {monthlyCost.toLocaleString()}円
               </span>
             </div>
+            {monthlyCost !== bonusMonthCost && (
+              <div className="space-x-2">
+                <label>ボーナス月支払額:</label>
+                <span className="text-xl font-semibold">
+                  {bonusMonthCost.toLocaleString()}円
+                </span>
+              </div>
+            )}
             <div className="space-x-2">
               <label>毎月返済額:</label>
               <span className="text-xl font-semibold">
                 {monthlyReturningPrice.toLocaleString()}円
               </span>
             </div>
+            {monthlyReturningPrice !== bonusMonthReturningPrice && (
+              <div className="space-x-2">
+                <label>ボーナス月返済額:</label>
+                <span className="text-xl font-semibold">
+                  {bonusMonthReturningPrice.toLocaleString()}円
+                </span>
+              </div>
+            )}
             <span>-----</span>
             <div className="space-x-2 flex">
               <label>総支払額:</label>
