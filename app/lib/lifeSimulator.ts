@@ -63,7 +63,6 @@ export function lifeSimulator({
 
   const remainWorkAge = 65 - age;
   const remainPartnerWorkAge = 65 - partnerAge;
-  const remainLifeAge = 100 - age;
 
   const mainIncome = salary * remainWorkAge;
   const partnerIncome = partnerSalary * remainPartnerWorkAge;
@@ -79,17 +78,19 @@ export function lifeSimulator({
     (result, item) => result + item * 10000,
     0
   );
+  console.log({ oneChildAllCost, addonAllPrivateSchoolCost });
 
   const allChildrenCost = childrenInfo.reduce<number>((result, item) => {
     return (
       result +
       oneChildAllCost +
-      Number(item.lessonsCost) +
+      Number(item.lessonsCost) * 12 * 15 +
       (item.isPrivateSchool ? addonAllPrivateSchoolCost : 0)
     );
   }, 0);
 
-  const monthlyChildCost = Math.round(allChildrenCost / (remainLifeAge * 12));
+  const monthlyChildCost = Math.round(allChildrenCost / (remainWorkAge * 12));
+  console.log({ monthlyChildCost, allChildrenCost });
 
   const monthlyCost =
     monthlyRentPrice +
@@ -102,10 +103,12 @@ export function lifeSimulator({
     savingCost +
     monthlyChildCost;
   const yearlyCost = monthlyCost * 12;
+  console.log({ yearlyCost, monthlyCost });
 
-  const allPayingCost = yearlyCost * remainLifeAge + allChildrenCost;
+  const allPayingCost = yearlyCost * remainWorkAge;
 
-  const allSavingCost = savingCost * 12 * remainLifeAge * (1 + savingCostRate);
+  const allSavingCost =
+    savingCost * 12 * remainWorkAge * (1 + savingCostRate / 100);
 
   const allBalance = allIncome - allPayingCost;
 

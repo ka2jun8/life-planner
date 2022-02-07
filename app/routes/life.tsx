@@ -7,7 +7,7 @@ import { ChildInfo, lifeSimulator } from "~/lib/lifeSimulator";
 const description = `人生にかかる支払額のシミュレーションを行います。
 人生にかかる額は、不動産に支払う額、生活のレベル、子供の数、昇格昇給や転職、
 預貯金がいくらありどのくらい投資がうまくいくかどうか、などによって変わります。
-人生100年時代なので、100歳までの間にかかる額と残せる額をシミュレーションすることで、
+65歳までの間にかかる額と残せる額をシミュレーションすることで、
 ライフプランニングを考えてみましょう。`;
 
 export const meta: MetaFunction = () => {
@@ -77,8 +77,8 @@ export default function LifeSimulationPage() {
     setMonthlyBalance(result.monthlyIncome - result.monthlyCost);
     setAllPayingCost(result.allPayingCost);
     setAllIncome(result.allIncome);
-    setAllSavingCost(result.allSavingCost);
     setAllBalance(result.allBalance);
+    setAllSavingCost(result.allSavingCost + result.allBalance);
     setTimeout(() => {
       const el = document.documentElement;
       window.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
@@ -248,41 +248,45 @@ export default function LifeSimulationPage() {
               );
             }}
           />
-          {Array.from(new Array(Number(childCount) || 0)).map((_, i) => {
-            const childInfo = childrenInfo[i];
-            const _childrenInfo = [...childrenInfo];
-            if (!childInfo) {
-              return;
+          {Array.from(new Array(Math.max(Number(childCount) || 0), 0)).map(
+            (_, i) => {
+              const childInfo = childrenInfo[i];
+              if (!childInfo) {
+                return;
+              }
+              const _childrenInfo = [...childrenInfo];
+              return (
+                <div key={i}>
+                  <h3 className="p-2 text-lg text-gray-800 bg-red-100">
+                    子供{i + 1}人目
+                  </h3>
+                  <SimpleRadio
+                    label="通わせるのは私立か公立か"
+                    value={childInfo.isPrivateSchool}
+                    items={["私立", "公立"]}
+                    onChange={(v) => {
+                      const info = { ..._childrenInfo[i] };
+                      info.isPrivateSchool = v;
+                      _childrenInfo[i] = info;
+                      setChildrenInfo(_childrenInfo);
+                    }}
+                  />
+                  <SimpleInput
+                    label="習い事にかける額"
+                    value={childInfo.lessonsCost}
+                    unit="円/月"
+                    description="子供が習い事にいくとかかる額を入れてください。部活動も含みます。"
+                    onChange={(v) => {
+                      const info = { ..._childrenInfo[i] };
+                      info.lessonsCost = v;
+                      _childrenInfo[i] = info;
+                      setChildrenInfo(_childrenInfo);
+                    }}
+                  />
+                </div>
+              );
             }
-            return (
-              <div key={i}>
-                <h3 className="p-2 text-lg text-gray-800 bg-red-100">
-                  子供{i + 1}人目
-                </h3>
-                <SimpleRadio
-                  label="通わせるのは私立か公立か"
-                  value={childInfo.isPrivateSchool}
-                  items={["私立", "公立"]}
-                  onChange={(v) => {
-                    childInfo.isPrivateSchool = v;
-                    _childrenInfo[i] = childInfo;
-                    setChildrenInfo(_childrenInfo);
-                  }}
-                />
-                <SimpleInput
-                  label="習い事にかける額"
-                  value={childInfo.lessonsCost}
-                  unit="円/月"
-                  description="子供が習い事にいくとかかる額を入れてください。部活動も含みます。"
-                  onChange={(v) => {
-                    childInfo.lessonsCost = v;
-                    _childrenInfo[i] = childInfo;
-                    setChildrenInfo(_childrenInfo);
-                  }}
-                />
-              </div>
-            );
-          })}
+          )}
           <button
             type="button"
             className="text-xl pl-6 pr-6 pt-2 pb-2 border-2 border-red-400 rounded-md text-red-400 font-bold"
@@ -330,6 +334,13 @@ export default function LifeSimulationPage() {
               <span className="text-xs">({allIncome.toLocaleString()}円)</span>
             </div>
             <div className="space-x-2">
+              <label>総収支:</label>
+              <span className="text-xl font-semibold">
+                約 {calcBigPriceStr(allBalance)}
+              </span>
+              <span className="text-xs">({allBalance.toLocaleString()}円)</span>
+            </div>
+            <div className="space-x-2">
               <label>総貯蓄額:</label>
               <span className="text-xl font-semibold">
                 約 {calcBigPriceStr(allSavingCost)}
@@ -337,13 +348,6 @@ export default function LifeSimulationPage() {
               <span className="text-xs">
                 ({allSavingCost.toLocaleString()}円)
               </span>
-            </div>
-            <div className="space-x-2">
-              <label>総収支:</label>
-              <span className="text-xl font-semibold">
-                約 {calcBigPriceStr(allBalance)}
-              </span>
-              <span className="text-xs">({allBalance.toLocaleString()}円)</span>
             </div>
           </section>
         )}
