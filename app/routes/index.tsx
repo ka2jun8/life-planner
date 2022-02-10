@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MetaFunction } from "remix";
+import { Link, MetaFunction } from "remix";
 import { SimpleInput } from "~/components/Input";
 import { SimpleRadio } from "~/components/Radio";
 import { rentSimulator } from "~/lib/rentSimulator";
@@ -340,12 +340,9 @@ export default function Index() {
             </div>
           </section>
         )}
-        <footer>
-          <p className="text-xs m-2">
-            Copyright © {new Date().getFullYear()},
-            住宅ローンシミュレーションツール. All Right Reserved.
-          </p>
-        </footer>
+        <Link className="ml-2" to="life">
+          ライフシミュレーションへ
+        </Link>
       </div>
     </div>
   );

@@ -51,6 +51,12 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
+        <footer>
+          <p className="text-xs m-2">
+            Copyright © {new Date().getFullYear()},
+            住宅ローンシミュレーションツール. All Right Reserved.
+          </p>
+        </footer>
       </body>
     </html>
   );
