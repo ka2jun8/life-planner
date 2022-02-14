@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, MetaFunction } from "remix";
 import { SimpleInput } from "~/components/Input";
 import { SimpleRadio } from "~/components/Radio";
+import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { rentSimulator } from "~/lib/rentSimulator";
 import { simulator } from "~/lib/simulator";
 
@@ -20,6 +21,9 @@ export const meta: MetaFunction = () => {
     ["og:type"]: "website",
   };
 };
+
+type SimulatorProps = Parameters<typeof simulator>[0];
+type RentSimulatorProps = Parameters<typeof rentSimulator>[0];
 
 export default function Index() {
   // ローンシミュレーションに必要なインプット
@@ -67,24 +71,60 @@ export default function Index() {
   // 頭金
   const downPayment = Number(housePrice) - Number(loanPrice);
 
+  // localStorage からの復元
+  const restoreRentInputData = (data: RentSimulatorProps | null) => {
+    if (!data) return;
+    setRentPrice(data.rentPrice.toString());
+    setCondoFee(data.condoFee.toString());
+    setRenewalFee(data.renewalFee.toString());
+    setAge(data.age.toString());
+  };
+  const restoreLoanInputData = (data: SimulatorProps | null) => {
+    if (!data) return;
+    setHousePrice(data.loanPrice.toString());
+    setLoanPrice(data.loanPrice.toString());
+    setLoanYear(data.loanYears.toString());
+    setManagementFee(data.otherFee.toString());
+    setInterestRate(data.interestRate.toString());
+    setIsTaxDeduction(data.isTaxDeduction);
+    setIsChildFutureAid(data.isChildFutureAid);
+    setBonusPrice(data.bonusPrice.toString());
+    setSalary(data.salary.toString());
+    setAge(data.age.toString());
+  };
+  // 保存用
+  const [, setLoanInput] = useLocalStorage<SimulatorProps | null>(
+    "loan-simulator",
+    null,
+    restoreLoanInputData
+  );
+  const [, setRentInput] = useLocalStorage<RentSimulatorProps | null>(
+    "rent-simulator",
+    null,
+    restoreRentInputData
+  );
+
   const calculateForRent = () => {
-    const result = rentSimulator({
+    const input = {
       age: Number(age),
       rentPrice: Number(rentPrice),
       condoFee: Number(condoFee),
       renewalFee: Number(renewalFee),
-    });
+    };
+    const result = rentSimulator(input);
     setIsSubmitted(true);
     setMonthlyCost(result.monthlyCost);
     setAllPayingCost(result.allPayingCost);
     setTimeout(() => {
       const el = document.documentElement;
       window.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      // 条件を保存しておく
+      setRentInput(input);
     }, 0);
   };
 
   const calculate = () => {
-    const result = simulator({
+    const input = {
       age: Number(age),
       loanYears: Number(loanYear),
       loanPrice: Number(loanPrice),
@@ -94,7 +134,8 @@ export default function Index() {
       salary: Number(salary),
       isTaxDeduction,
       isChildFutureAid,
-    });
+    };
+    const result = simulator(input);
     setIsSubmitted(true);
     setMonthlyReturningPrice(result.monthlyReturningPrice);
     setMonthlyCost(result.monthlyCost);
@@ -112,6 +153,8 @@ export default function Index() {
     setTimeout(() => {
       const el = document.documentElement;
       window.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      // 条件を保存しておく
+      setLoanInput(input);
     }, 0);
   };
 

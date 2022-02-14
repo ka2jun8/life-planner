@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, MetaFunction } from "remix";
 import { SimpleInput } from "~/components/Input";
 import { SimpleRadio } from "~/components/Radio";
+import { useLocalStorage } from "~/hooks/useLocalStorage";
 import { ChildInfo, lifeSimulator } from "~/lib/lifeSimulator";
 
 const description = `人生にかかる支払額のシミュレーションを行います。
@@ -19,6 +20,8 @@ export const meta: MetaFunction = () => {
     ["og:type"]: "website",
   };
 };
+
+type SimulatorProps = Parameters<typeof lifeSimulator>[0];
 
 export default function LifeSimulationPage() {
   // TODO ほんとは前画面からもらってくる額
@@ -54,8 +57,34 @@ export default function LifeSimulationPage() {
   const [allSavingCost, setAllSavingCost] = useState<number>(0);
   const [allBalance, setAllBalance] = useState<number>(0);
 
+  // localStorage からの復元
+  const restoreLifeInputData = (data: SimulatorProps | null) => {
+    if (!data) return;
+    setMonthlyRentPrice(data.monthlyRentPrice.toString());
+    setSalary(data.salary.toString());
+    setAge(data.age.toString());
+    setPartnerSalary(data.partnerSalary.toString());
+    setPartnerAge(data.partnerAge.toString());
+    setLivingExpenses(data.livingExpenses.toString());
+    setUtilitiesCost(data.utilitiesCost.toString());
+    setInsurance(data.insurance.toString());
+    setHobbyCost(data.hobbyCost.toString());
+    setEntertainmentCost(data.entertainmentCost.toString());
+    setOtherCost(data.otherCost.toString());
+    setSavingCost(data.savingCost.toString());
+    setSavingCostRate(data.savingCostRate.toString());
+    setChildCount(data.childrenInfo.length.toString());
+    setChildrenInfo(data.childrenInfo);
+  };
+  // 保存用
+  const [, setLifeInput] = useLocalStorage<SimulatorProps | null>(
+    "life-simulator",
+    null,
+    restoreLifeInputData
+  );
+
   const calculate = () => {
-    const result = lifeSimulator({
+    const input = {
       monthlyRentPrice: Number(monthlyRentPrice),
       age: Number(age),
       salary: Number(salary),
@@ -70,7 +99,8 @@ export default function LifeSimulationPage() {
       savingCost: Number(savingCost),
       savingCostRate: Number(savingCostRate),
       childrenInfo,
-    });
+    };
+    const result = lifeSimulator(input);
     setIsSubmitted(true);
     setMonthlyCost(result.monthlyCost);
     setMonthlyIncome(result.monthlyIncome);
@@ -82,6 +112,8 @@ export default function LifeSimulationPage() {
     setTimeout(() => {
       const el = document.documentElement;
       window.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      // 保存する
+      setLifeInput(input);
     }, 0);
   };
 
